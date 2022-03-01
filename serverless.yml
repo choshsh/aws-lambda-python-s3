@@ -1,0 +1,95 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: sls-python
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  bucketName: aws-frontend-s3-202202
+  pythonRequirements:
+    dockerizePip: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-northeast-2
+  memorySize: 256
+  timeout: 5
+  environment:
+    bucketName: ${self:custom.bucketName}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:ListBucket"
+          Resource:
+            - "arn:aws:s3:::${self:custom.bucketName}"
+        - Effect: "Allow"
+          Action:
+            - "s3:GetObject"
+            - "s3:PutObject"
+          Resource:
+            - "arn:aws:s3:::${self:custom.bucketName}/*"
+
+# you can define service wide environment variables here
+
+# you can add packaging information here
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!package.json'
+    - '!package-lock.json'
+#    - '!exclude-me-dir/**'
+#    - include-me.py
+#    - include-me-dir/**
+
+functions:
+  key:
+    handler: handler.key
+    events:
+      - http:
+          path: /key
+          method: get
+  file:
+    handler: handler.file
+    events:
+      - http:
+          path: /file
+          method: get
+          request:
+            parameters:
+              querystrings:
+                name: true
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
