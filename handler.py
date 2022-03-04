@@ -4,10 +4,11 @@ import os
 
 import boto3
 
+s3 = boto3.resource('s3')
+bucket = s3.Bucket(os.getenv('bucketName'))
+
 
 def key(event, context):
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(os.getenv('bucketName'))
     objects = bucket.objects.all()
     keys = [obj.key for obj in objects]
 
@@ -29,8 +30,6 @@ def file(event, context):
     try:
         name = event['queryStringParameters']['name']
 
-        s3 = boto3.resource('s3')
-        bucket = s3.Bucket(os.getenv('bucketName'))
         s3file = bucket.Object(name)
         s3file_content = s3file.get()['Body'].read()
 
