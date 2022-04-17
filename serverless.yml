@@ -22,7 +22,6 @@ frameworkVersion: '3'
 
 plugins:
   - serverless-python-requirements
-
 custom:
   stage: ${opt:stage, 'dev'}
   bucketName: aws-frontend-s3-202202
@@ -33,23 +32,23 @@ provider:
   name: aws
   runtime: python3.8
   stage: ${self:custom.stage}
-  region: ap-northeast-2
+  region: ap-northeast-1
   memorySize: 256
   timeout: 5
   environment:
     bucketName: ${self:custom.bucketName}
-  apiGateway:
-    apiKeySourceType: HEADER
-    apiKeys:
-      - apikey-${self:custom.stage}
-    usagePlan:
-      quota:
-        limit: 5000
-        offset: 2
-        period: MONTH
-      throttle:
-        burstLimit: 500
-        rateLimit: 200
+#  apiGateway:
+#    apiKeySourceType: HEADER
+#    apiKeys:
+#      - apikey-${self:custom.stage}
+#    usagePlan:
+#      quota:
+#        limit: 5000
+#        offset: 2
+#        period: MONTH
+#      throttle:
+#        burstLimit: 500
+#        rateLimit: 200
   iam:
     role:
       statements:
@@ -81,21 +80,21 @@ functions:
   key:
     handler: handler.key
     events:
-      - http:
+      - httpApi:
           path: /key
           method: get
-          private: true
+#          private: true
   file:
     handler: handler.file
     events:
-      - http:
+      - httpApi:
           path: /file
           method: get
-          private: true
-          request:
-            parameters:
-              querystrings:
-                name: true
+#          private: true
+#          request:
+#            parameters:
+#              querystrings:
+#                name: true
 
 # you can add CloudFormation resource templates here
 #resources:
